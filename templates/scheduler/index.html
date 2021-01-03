@@ -1,0 +1,130 @@
+{% load static %}
+<!--↑staticディレクトリに格納した静的ファイルを読み込みするときは必ず指定-->
+
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+	<meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+	<title>スケジューラー</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+
+    <link rel="stylesheet" href="{% static 'scheduler/css/style.css' %}">
+
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <!-- staticを使って、JSファイルを読み込みましょう。 
+        <script src="script.js"></script> 
+        -->
+
+    <!--日本語化用JS-->
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ja.js"></script>
+    <script src="{% static 'scheduler/js/script.js' %}"></script>
+
+
+</head>
+<body onload="LoadProc();">
+    <h1 class="bg-primary text-center text-white">スケジューラー</h1>
+
+    <main class="containerM">
+        <h1 id="RealtimeClockArea2" class="text-center"></h1>
+        <form method="POST">
+            <!--↓POST文実行時はCSRF対策のため必ず指定-->
+            {% csrf_token %}
+            <!--POST文を送信した際、name属性を元にviews.pyが参照を行う-->
+            <input id="dt" type="text" name="deadline" readonly value="クリックで日時を指定">
+            <!--
+            <input class="form-control" name="deadline" type="datetime-local" value="2020-12-06 11:30:00">
+            -->
+            <textarea class="form-control" name="task" placeholder="ここにやることを書く＊日時、内容を記入しないと反映されません" rows="3"></textarea>
+            <input class="form-control" type="submit" value="送信">
+        </form>
+
+        <form action="" method="GET">
+
+            <!--ここにチェックボックスを設置すれば、AND検索とOR検索を切り替えられるようにする事ができる。-->
+            <div class="row align-items-center mx-0">
+
+                <input class="col-5" type="text" name="search" placeholder="キーワード検索" value="{{ request.GET.search }}">
+                <!--↑value属性に指定されている request.GET.search のテンプレート変数を使えば、検索キーワードをそのまま表示できる-->
+                <input class="col-1" type="submit" value="{{ ANDOR }}検索">
+                    <div class="ui_demo_area col-2">
+                         <input id="ios_chk_01" name="checkbox" class="ui20-input_chk" type="checkbox"><label class="ui20-ios_conf" for="ios_chk_01"></label>
+                    </div>
+                <div class="col-4"></div>
+            </div>
+        </form>
+
+        <!--
+        <input id="date" type="text" readonly>
+        <input id="time" type="text" readonly>
+
+        <input id="dt" type="text" readonly>
+        -->
+
+        <!--↓テンプレートタグで繰り返し処理、条件分岐を行うことが可能(P74)-->
+        <div class="table-responsive My-table">
+            <table class="table">
+                <tbody class="border">
+                <div>{{ data|length }} 件ヒットしています</div>
+                    <thead class="thead-light">
+                        <tr><th><div>日時</div></th><th><div>内容</div></th><th style="white-space:nowrap;"><div>削除</div></th><th style="white-space:nowrap;"><div>編集</div></th></tr>
+                    </thead>
+                    <!--↓テンプレート変数(p70)-->
+                    {% for content in data %}
+                    <tr><td style="white-space:nowrap;"><div id="{{ content.id }}_deadline">{{ content.deadline|date:"Y年m月d日 H時i分" }}</div></td><td><div id="{{ content.id }}_task">{{ content.task|linebreaksbr }}</div></td>
+                        <td style="white-space:nowrap;">
+                            <div>
+                                <!-- ↓ urls.pyでURLが delete/ と定義したビューにPOST文を送る-->
+                                <form action="{% url 'scheduler:delete' %}" method="post">
+                                    {% csrf_token %}
+                                    <button class="btn btn-outline-danger" name="id" value ="{{ content.id }}">削除</button>
+                                </form>
+
+                            </div>
+                        </td>
+                        <td style="white-space:nowrap;">
+                            <div>
+                                <button class="btn btn-outline-success edit_button" value="{{ content.id }}">編集</button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+
+        <!--モーダルウィンドウ-->
+        <div id="modal">
+            <div id="modal_content" class="container">
+                <!--ここに編集先のURLを-->
+                <form action="{% url 'scheduler:edit' %}" method="POST" class="p-1">
+
+                    {% csrf_token %}
+
+                    <input id="edit_target_id" type="hidden" value="" name="id">
+                    
+                    <h2 class="text-center">編集中</h2>
+
+                    <input id="modal_deadline" type="text" value="" name="deadline" readonly>
+                    <textarea id="modal_task" class="form-control" rows="6" name="task"></textarea>
+
+                    <input class="form-control" type="submit" value="編集">
+
+                </form>
+            </div>
+        </div>
+
+    </main>
+
+
+
+</body>
+</html>
+
