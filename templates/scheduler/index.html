@@ -37,11 +37,11 @@
             <!--↓POST文実行時はCSRF対策のため必ず指定-->
             {% csrf_token %}
             <!--POST文を送信した際、name属性を元にviews.pyが参照を行う-->
-            <input id="dt" type="text" name="deadline" readonly value="クリックで日時を指定">
+            <input id="dt" type="text" name="deadline" readonly value="クリックで日時を指定" required>
             <!--
             <input class="form-control" name="deadline" type="datetime-local" value="2020-12-06 11:30:00">
             -->
-            <textarea class="form-control" name="task" placeholder="ここにやることを書く＊日時、内容を記入しないと反映されません" rows="3"></textarea>
+            <textarea class="form-control" name="task" placeholder="ここにやることを書く＊日時、内容を記入しないと反映されません" rows="3" required maxlength="500"></textarea>
             <input class="form-control" type="submit" value="送信">
         </form>
 
@@ -54,7 +54,7 @@
                 <!--↑value属性に指定されている request.GET.search のテンプレート変数を使えば、検索キーワードをそのまま表示できる-->
                 <input class="col-1" type="submit" value="{{ ANDOR }}検索">
                     <div class="ui_demo_area col-2">
-                         <input id="ios_chk_01" name="checkbox" class="ui20-input_chk" type="checkbox"><label class="ui20-ios_conf" for="ios_chk_01"></label>
+                        <input id="ios_chk_01" name="checkbox" class="ui20-input_chk" type="checkbox" {% if request.GET.checkbox %}checked{% endif %}><label class="ui20-ios_conf" for="ios_chk_01"></label>
                     </div>
                 <div class="col-4"></div>
             </div>
@@ -112,8 +112,8 @@
                     
                     <h2 class="text-center">編集中</h2>
 
-                    <input id="modal_deadline" type="text" value="" name="deadline" readonly>
-                    <textarea id="modal_task" class="form-control" rows="6" name="task"></textarea>
+                    <input id="modal_deadline" type="text" value="" name="deadline" readonly required>
+                    <textarea id="modal_task" class="form-control" rows="6" name="task" required maxlength="500"></textarea>
 
                     <input class="form-control" type="submit" value="編集">
 

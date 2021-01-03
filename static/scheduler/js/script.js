@@ -41,9 +41,9 @@ function set2fig(num) {
 }
 function showClock2() {
    var nowTime = new Date();
-   var nowYear = set2fig( nowTime.getFullYear() + 1 );
+   var nowYear = set2fig( nowTime.getFullYear() );
    var nowMonth = set2fig( nowTime.getMonth() + 1 );
-   var nowDate = set2fig( nowTime.getDate() + 1);
+   var nowDate = set2fig( nowTime.getDate() );
    var nowHour = set2fig( nowTime.getHours() );
    var nowMin  = set2fig( nowTime.getMinutes() );
    var nowSec  = set2fig( nowTime.getSeconds() );

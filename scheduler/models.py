@@ -8,6 +8,7 @@ class Scheduler(models.Model):
     #DBのカラム(タテ列)に当たるフィールドを指定する(P47を参照)
     deadline    = models.DateTimeField(verbose_name="締め切り日時")
     task        = models.CharField(verbose_name="やること",max_length=500)
+    done        = models.BooleanField(default=False)
 
 
     #管理サイト閲覧時、1つのレコード(ヨコ列)をprint文で出力時、taskが表示される。
